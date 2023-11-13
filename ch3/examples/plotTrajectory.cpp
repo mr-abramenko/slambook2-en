@@ -1,8 +1,9 @@
 #include <pangolin/pangolin.h>
-#include <Eigen/Core>
 #include <unistd.h>
 
-// 本例演示了如何画出一个预先存储的轨迹
+#include <Eigen/Core>
+
+// This example demonstrates how to draw a pre-stored trajectory
 
 using namespace std;
 using namespace Eigen;
@@ -13,7 +14,6 @@ string trajectory_file = "./examples/trajectory.txt";
 void DrawTrajectory(vector<Isometry3d, Eigen::aligned_allocator<Isometry3d>>);
 
 int main(int argc, char **argv) {
-
   vector<Isometry3d, Eigen::aligned_allocator<Isometry3d>> poses;
   ifstream fin(trajectory_file);
   if (!fin) {
@@ -36,7 +36,8 @@ int main(int argc, char **argv) {
 }
 
 /*******************************************************************************************/
-void DrawTrajectory(vector<Isometry3d, Eigen::aligned_allocator<Isometry3d>> poses) {
+void DrawTrajectory(
+    vector<Isometry3d, Eigen::aligned_allocator<Isometry3d>> poses) {
   // create pangolin window and plot the trajectory
   pangolin::CreateWindowAndBind("Trajectory Viewer", 1024, 768);
   glEnable(GL_DEPTH_TEST);
@@ -44,13 +45,12 @@ void DrawTrajectory(vector<Isometry3d, Eigen::aligned_allocator<Isometry3d>> pos
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   pangolin::OpenGlRenderState s_cam(
-    pangolin::ProjectionMatrix(1024, 768, 500, 500, 512, 389, 0.1, 1000),
-    pangolin::ModelViewLookAt(0, -0.1, -1.8, 0, 0, 0, 0.0, -1.0, 0.0)
-  );
+      pangolin::ProjectionMatrix(1024, 768, 500, 500, 512, 389, 0.1, 1000),
+      pangolin::ModelViewLookAt(0, -0.1, -1.8, 0, 0, 0, 0.0, -1.0, 0.0));
 
   pangolin::View &d_cam = pangolin::CreateDisplay()
-    .SetBounds(0.0, 1.0, 0.0, 1.0, -1024.0f / 768.0f)
-    .SetHandler(new pangolin::Handler3D(s_cam));
+                              .SetBounds(0.0, 1.0, 0.0, 1.0, -1024.0f / 768.0f)
+                              .SetHandler(new pangolin::Handler3D(s_cam));
 
   while (pangolin::ShouldQuit() == false) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -58,7 +58,7 @@ void DrawTrajectory(vector<Isometry3d, Eigen::aligned_allocator<Isometry3d>> pos
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glLineWidth(2);
     for (size_t i = 0; i < poses.size(); i++) {
-      // 画每个位姿的三个坐标轴
+      // Draw the three coordinate axes of each pose
       Vector3d Ow = poses[i].translation();
       Vector3d Xw = poses[i] * (0.1 * Vector3d(1, 0, 0));
       Vector3d Yw = poses[i] * (0.1 * Vector3d(0, 1, 0));
@@ -75,7 +75,7 @@ void DrawTrajectory(vector<Isometry3d, Eigen::aligned_allocator<Isometry3d>> pos
       glVertex3d(Zw[0], Zw[1], Zw[2]);
       glEnd();
     }
-    // 画出连线
+    // Draw a connecting line
     for (size_t i = 0; i < poses.size(); i++) {
       glColor3f(0.0, 0.0, 0.0);
       glBegin(GL_LINES);
@@ -85,6 +85,6 @@ void DrawTrajectory(vector<Isometry3d, Eigen::aligned_allocator<Isometry3d>> pos
       glEnd();
     }
     pangolin::FinishFrame();
-    usleep(5000);   // sleep 5 ms
+    usleep(5000);  // sleep 5 ms
   }
 }
